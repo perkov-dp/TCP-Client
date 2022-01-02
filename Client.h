@@ -13,7 +13,7 @@ using namespace std;
 
 class Client {
 public:
-	Client(int socket_type, pair<const string&, int> socket_pair);
+	Client(pair<const string&, int> socket_pair);
 	int socketFd;
 private:
 	int Socket(int family, int socket_type);

@@ -8,13 +8,27 @@
  * - type (SOCK_STREAM - потоковый сокет)
  * - пару сокетов <IP адрес, № порта>, однозначно устанавливающую пар-ры соединения
  */
-Client::Client(int socket_type, pair<const string&, int> socket_pair) {
+Client::Client(pair<const string&, int> socket_pair) {
+	/**
+	 * Создание сокета TCP.
+	 * Ф-я Socket возвращает дискриптор, к-рый идентифицирует сокет
+	 * в последующих вызовах (connect, read)
+	 */
+	const int SOCKET_TYPE = SOCK_STREAM;	//	потоковый сокет
 	const int PROTOCOL_FAMILY = AF_INET;	//	семейство протоколов IPv4
-	socketFd = Socket(PROTOCOL_FAMILY, socket_type);
+	socketFd = Socket(PROTOCOL_FAMILY, SOCKET_TYPE);
 
+	/**
+	 * Заполнение структуры адреса Интернета IP-адресом и № порта сервера
+	 */
 	string IP_address = socket_pair.first;
 	int port_number = socket_pair.second;
 	struct sockaddr_in servaddr = InitSockaddrStruct(PROTOCOL_FAMILY, IP_address, port_number);
+
+	/**
+	 * Установка соединения с сервером по протоколу TCP.
+	 * Адрес сокета содержится в структуре servaddr.
+	 */
 	Connect(socketFd, servaddr);
 }
 

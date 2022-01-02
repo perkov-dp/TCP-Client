@@ -4,11 +4,10 @@ int main(int argc, char *argv[]) {
 	int rcv_bytes_cnt = 0;
 	char recvline[128];
 
-	const int SOCKET_TYPE = SOCK_STREAM;
 	string IP_ADDRESS = "127.0.0.1";
 	const uint16_t PORT_NUMBER = 34543;	//	сервер даты и времени
 	pair<string&, int> socket_pair(IP_ADDRESS, PORT_NUMBER);
-	Client client(SOCKET_TYPE, socket_pair);
+	Client client(socket_pair);
 
 	/**
 	 * Чтение и обработка ответа сервера.
