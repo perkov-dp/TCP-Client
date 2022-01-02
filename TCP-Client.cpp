@@ -17,16 +17,10 @@ int main(int argc, char *argv[]) {
 	 * - сервер разорвал соединение и read вернула 0
 	 * - при ошибке
 	 */
-	while ((rcv_bytes_cnt = read(client.socketFd, &recvline, 256)) > 0) {
-		recvline[rcv_bytes_cnt] = 0;	//	завершающий нуль
-		if (fputs(recvline, stdout) == EOF) {
-			cout << "fputs error" << endl;
-		}
-	}
+	rcv_bytes_cnt = client.Readn(&recvline, 256);
 	if (rcv_bytes_cnt < 0) {
 		cout << "read error" << endl;
 	}
-	cout << endl;
 
 	return EXIT_SUCCESS;
 }

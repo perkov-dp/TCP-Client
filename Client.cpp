@@ -89,7 +89,77 @@ sockaddr_in Client::InitSockaddrStruct(int family, const string& ip_address, uin
  */
 void Client::Connect(int sockfd, const struct sockaddr_in& servaddr) {
 	if (connect(sockfd, (struct sockaddr*)&servaddr, sizeof(servaddr)) < 0) {
-		cout << "connect error" << endl;
+		perror("connect error");
 		exit(EXIT_FAILURE);
 	}
 }
+
+/**
+ * Чтение n - байт по одному.
+ * В сетевых программах могут быть случаи, когда за один раз не получится все прочитать.
+ */
+ssize_t Client::readn(int fd, void *vptr, size_t n) {
+	size_t	nleft = 0;	//	оставшееся кол-во читаемых байт
+	ssize_t	nread = 0;	//	кол-во считанных байт на данный мом-т
+	char	*ptr;		//	ук-ль на читаемый буфер
+
+	bzero(vptr, n);
+	ptr = (char*)vptr;
+	nleft = n;
+	while (nleft > 0) {
+		if ( (nread = read(fd, ptr, nleft)) < 0) {
+			if (errno == EINTR) {
+				/* and call read() again */
+				continue;
+			}
+			return(-1);
+		} else if (nread == 0) {
+			break;	/* EOF */
+		}
+
+		nleft -= nread;	//	количество читаемых байт уменьшается на кол-во прочитанных байт
+		ptr   += nread;	//	указатель сдвигается на кол-во прочитанных байт
+	}
+	return(n - nleft);		/* return >= 0 */
+}
+
+ssize_t Client::Readn(void *ptr, size_t nbytes) {
+	ssize_t	n;
+	if ((n = readn(socketFd, ptr, nbytes)) < 0) {
+		perror("readn error");
+	}
+
+	return(n);
+}
+
+/**
+ * Запись n байт.
+ * Вариант для неблокирующего write, но годится и для неблокирующего
+ */
+ssize_t Client::writen(int fd, const void *vptr, size_t n) {
+	size_t		nleft;		//	оставшееся кол-во записываемых байт
+	ssize_t		nwritten;	//	кол-во записанных байт на данный мом-т
+	const char	*ptr;		//	ук-ль на записываемый буфер
+
+	ptr = (char*)vptr;
+	nleft = n;
+	while (nleft > 0) {
+		if ((nwritten = write(fd, ptr, nleft)) < 0) {
+			if (errno == EINTR) {
+				continue;		/* and call write() again */
+			}
+			return -1;			/* error */
+		}
+
+		nleft -= nwritten;	//	количество записываемых байт уменьшается на кол-во записанных байт
+		ptr   += nwritten;	//	указатель сдвигается на кол-во записанных байт
+	}
+	return(n);
+}
+
+void Client::Writen(const void *ptr, size_t nbytes) {
+	if (writen(socketFd, ptr, nbytes) != static_cast<int>(nbytes)) {
+		perror("writen error");
+	}
+}
+
