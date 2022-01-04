@@ -107,7 +107,8 @@ ssize_t Client::readn(int fd, void *vptr, size_t n) {
 	ptr = (char*)vptr;
 	nleft = n;
 	while (nleft > 0) {
-		if ( (nread = read(fd, ptr, nleft)) < 0) {
+		nread = read(fd, ptr, nleft);
+		if (nread == -1) {
 			if (errno == EINTR) {
 				/* and call read() again */
 				continue;
@@ -115,6 +116,12 @@ ssize_t Client::readn(int fd, void *vptr, size_t n) {
 			return(-1);
 		} else if (nread == 0) {
 			break;	/* EOF */
+		}
+		else {
+			if (ptr[nread - 1] == '\n') {
+				nleft -= nread;	//	количество читаемых байт уменьшается на кол-во прочитанных байт
+				break;	/* EOF */
+			}
 		}
 
 		nleft -= nread;	//	количество читаемых байт уменьшается на кол-во прочитанных байт
@@ -162,4 +169,21 @@ void Client::Writen(const void *ptr, size_t nbytes) {
 		perror("writen error");
 	}
 }
+
+/**
+ * Считывание строки с консоли->отправка ее серверу->прием эхо-ответа от сервера
+ */
+void Client::str_cli(FILE *fp) {
+	char sendline[256], recvline[256];
+
+	fgets(sendline, sizeof(sendline), fp);
+	Writen(sendline, strlen(sendline));
+	cout << "write to server: " << sendline << endl;
+
+	if (Readn(recvline, sizeof(recvline)) == 0) {
+		perror("str_cli: server terminated prematurely");
+	}
+	cout << "recieve from server: " << recvline << endl;
+}
+
 

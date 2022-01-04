@@ -17,6 +17,7 @@ public:
 	Client(pair<const string&, int> socket_pair);
 	ssize_t Readn(void *vptr, size_t n);
 	void Writen(const void *vptr, size_t n);
+	void str_cli(FILE *fp);
 
 	int socketFd;
 private:
