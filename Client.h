@@ -16,6 +16,9 @@ class Client {
 public:
 	Client(){};
 	Client(const pair<const string&, int>& socket_pair);
+	~Client() {
+		Close();
+	}
 	void ClientInit(const pair<const string&, int>& socket_pair);
 
 	ssize_t Readn(void *vptr, size_t n);
@@ -31,5 +34,6 @@ private:
 
 	ssize_t readn(int fd, void *vptr, size_t n);
 	ssize_t writen(int fd, const void *vptr, size_t n);
+	void Close();
 };
 ssize_t Readn(int fd, void *ptr, size_t nbytes);

@@ -183,6 +183,13 @@ void Client::Writen(const void *ptr, size_t nbytes) {
 }
 
 /**
+ * Завершение соединения с сервером.
+ */
+void Client::Close() {
+	close(socketFd);
+}
+
+/**
  * Считывание строки с консоли->отправка ее серверу->прием эхо-ответа от сервера
  */
 void Client::str_cli(FILE *fp) {
