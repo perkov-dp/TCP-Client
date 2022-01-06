@@ -8,7 +8,19 @@
  * - type (SOCK_STREAM - потоковый сокет)
  * - пару сокетов <IP адрес, № порта>, однозначно устанавливающую пар-ры соединения
  */
-Client::Client(pair<const string&, int> socket_pair) {
+Client::Client(const pair<const string&, int>& socket_pair) {
+	ClientInit(socket_pair);
+}
+
+/**
+ * Конструетор Клиента.
+ * Здесь происходит инициализация и настрока пар-ров соед-я Сервером.
+ * Принимает на вход:
+ * - семейство протоколов (AF_INET - интернета IPv4)
+ * - type (SOCK_STREAM - потоковый сокет)
+ * - пару сокетов <IP адрес, № порта>, однозначно устанавливающую пар-ры соединения
+ */
+void Client::ClientInit(const pair<const string&, int>& socket_pair) {
 	/**
 	 * Создание сокета TCP.
 	 * Ф-я Socket возвращает дискриптор, к-рый идентифицирует сокет

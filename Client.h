@@ -14,7 +14,10 @@ using namespace std;
 
 class Client {
 public:
-	Client(pair<const string&, int> socket_pair);
+	Client(){};
+	Client(const pair<const string&, int>& socket_pair);
+	void ClientInit(const pair<const string&, int>& socket_pair);
+
 	ssize_t Readn(void *vptr, size_t n);
 	void Writen(const void *vptr, size_t n);
 	void str_cli(FILE *fp);
